@@ -133,7 +133,7 @@ td,th{padding:9px 11px}
 .action-toast.hidden{display:none}
 @media print{.action-toast{display:none!important}}
 
-/* Studio 6.9 — modularni odvodni mesti na BUS 60 */
+/* Studio 7.0 — modularni odvodni mesti na BUS 60 */
 .slot-config{display:grid;gap:8px;padding:11px 14px;background:#fff;border-block:1px solid #dce6ee}
 .slot-head{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
 .slot-head strong{font-size:13px;color:#173f65}.slot-head small{color:#647b93;font-size:11px}
@@ -146,10 +146,10 @@ td,th{padding:9px 11px}
 </style></head>
 <body>
 <header class="top">
-  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.9</span></h1></div></div>
+  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 7.0</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
-<div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example250125Btn">Primer 250 A + 2 × 125 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><button class="btn subtle" id="standardBtn">Vsi deli TS 30</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn primary" id="pdfSchemeBtn" title="Izvozi trenutno celotno montažno shemo neposredno kot PDF A4">↓ PDF shema</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
+<div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example250125Btn">Primer 250 A + 2 × 125 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><button class="btn subtle" id="standardBtn">Vsi deli TS 30</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn primary" id="pdfSchemeBtn" title="Prenesi trenutno montažno shemo skupaj s celotnim popisom materiala">↓ PDF shema + popis</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
 <div class="app-grid">
   <aside class="panel catalog-panel"><div class="panel-head"><div><span class="kicker">01 · KATALOG</span><h2>Komponente</h2></div><span class="count" id="catalogCount"></span></div><div class="searchbox">⌕ <input id="search" placeholder="Išči: HVL, števec, sponka, PEN ..." aria-label="Iskanje komponent"></div><div class="filters" id="filters"></div><div class="catalog-scroll" id="catalog"></div><div class="sidebar-tip">+ Dodaj element in ga povleci na svoje mesto. Za fotografijo konkretnega izdelka izberi element in uporabi možnost <b>Naloži sliko</b>.<p class="maker-links"><b>Primeri dejanskih tipov ETI:</b> <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690872-kvl-1-3p-m10-m10" target="_blank" rel="noopener">KVL-1 250 A</a> · <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690870-kvl-00-3p-m8-m8" target="_blank" rel="noopener">KVL-00 160 A</a>. Preveri, ali ustrezata izbranemu načinu montaže.</p><p class="maker-links"><b>Merilna garnitura:</b> <a target="_blank" rel="noopener" href="https://marchiol.si/izdelek/sponka-za-merilno-garnituro-komplet-9191">SM Strojkoplast · MG-LM / 9191</a> (odklopnik je sestavni del kompleta, brez SPD).</p></div></aside>
   <main class="panel main-panel"><div class="main-head"><div><span class="kicker">02 · DELAVNA POVRŠINA</span><h2>Montažna razporeditev</h2><p>Na istem mestu izberi 1 × 160 A ali 2 × 125 A · ostale naprave ostanejo</p></div><div class="head-actions"><button type="button" class="btn subtle" id="focusBtn">⛶ Velik pogled</button><div class="head-tabs"><button class="tab active" id="tabDesign">Načrt</button><button class="tab" id="tabSource">Original TS 30</button></div></div></div>
@@ -623,73 +623,212 @@ function saveProject(){saveFile(namePrefix()+'.json',new Blob([JSON.stringify(st
 function exportCSV(){const rows=bomRows(),data=[['Opis','Proizvajalec / tip','Količina','Enota','Cena/kos EUR','Skupaj EUR'],...rows.map(r=>[r.name,r.model,r.qty,r.unit,r.price.toFixed(2),(r.price*r.qty).toFixed(2)])];const csv='\ufeff'+data.map(row=>row.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\r\n');saveFile(namePrefix()+'_popis.csv',new Blob([csv],{type:'text/csv;charset=utf-8;'}))}
 async function exportPNG(){const svg=$('cabinetSvg').cloneNode(true);svg.setAttribute('xmlns','http://www.w3.org/2000/svg');svg.setAttribute('width','1320');svg.setAttribute('height','1800');svg.setAttribute('viewBox','0 0 660 900');svg.style.width='1320px';svg.style.aspectRatio='660 / 900';const xml=new XMLSerializer().serializeToString(svg);const url=URL.createObjectURL(new Blob([xml],{type:'image/svg+xml;charset=utf-8'}));const image=new Image();try{await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=reject;image.src=url;});const cvs=document.createElement('canvas');cvs.width=1320;cvs.height=1800;const ctx=cvs.getContext('2d');ctx.fillStyle='white';ctx.fillRect(0,0,1320,1800);ctx.drawImage(image,0,0,1320,1800);cvs.toBlob(b=>{if(b)saveFile(namePrefix()+'_risba.png',b);else alert('PNG ni bilo mogoče ustvariti.')},'image/png');}catch(e){alert('Izvoz PNG ni uspel. Uporabi Tisk / PDF.')}finally{URL.revokeObjectURL(url)}}
 
-// Prenos prave datoteke PDF A4 s trenutno razporeditvijo. Brez spletnih knjižnic.
-// Shema se zajame neposredno iz trenutnega projekta, ne iz statične slike.
+// PDF: 1. stran trenutna celotna montažna risba; 2. in naslednje strani
+// SAMODEJNI popis vseh dejansko vključenih komponent in ročno dodanih postavk.
+// Namenoma brez zunanjih knjižnic, tudi na telefonu in brez interneta.
+function pdfMaterials(){
+ const examples={
+  hvl1:['ETI','KVL-B-1 3p M10-M10 + covers · 001699031'],
+  hvl00:['ETI','KVL-B-00 3p M8-M8 + covers · 001699030'],
+  hvl125:['ETI','KVL-B-000 3p F50 Bottom · 001690915'],
+  spd:['Zaščite','B PRO 12,5/275 3P-R · 600014'],
+  mg9191:['SM Strojkoplast','MG-LM / komplet 9191'],
+  touchcover:['PANCEROL ELECTRIC GmbH','Art.-Nr. 106335']
+ };
+ const entries=bomRows().map(row=>{
+  const p=state.parts.find(item=>item.id===row.id);
+  const type=p?.type||'';
+  const fallback=examples[type]||[];
+  const savedName=String(row.name||'').trim();
+  // Stare shranjene projekte ob izvozu samo dopolnimo, ne spreminjamo na risbi.
+  const name=(!row.manual&&fallback.length&&(/^(Horizontalni varovalčni ločilnik|Prenapetostni odvodnik \(3-polni\)|Mehanska zaščita pred dotikom)/i).test(savedName))
+   ?catIndex[type].name:savedName;
+  let maker=(p?.maker||fallback[0]||'').trim();
+  const model=(p?.model||fallback[1]||'').trim();
+  if(type==='spd' && /zaščite\s*\/\s*raycap/i.test(maker)) maker=/protec|raycap/i.test(model)?'Raycap':'Zaščite d.o.o.';
+  const rated=String(p?.rating||'').trim();
+  let specification=[maker,model].filter(Boolean).join(' · ');
+  if(type==='ct'){
+   specification='Prestava '+(rated||'ni določena')+(rated?' A':'')+(specification?' · '+specification:'')+(!model?' · tip/model ni določen':'');
+  } else if(rated && ['hvl1','hvl00','hvl125','breaker','d02'].includes(type)){
+   specification=(rated+' A')+(specification?' · '+specification:'');
+  }
+  if(!specification) specification=row.manual?String(row.model||'').trim():'Tip/model ni določen';
+  const comment=p?.unplaced?'Neumeščen element – vključen v popis':null;
+  return {name, specification, qty:row.qty,unit:row.unit||'kos',category:row.kind||'Drugo',price:row.price,comment};
+ });
+ const order=['Zaščita','Merjenje','Povezave','Konstrukcija','Dodatki','Ročno','Drugo'];
+ return entries.sort((a,b)=>order.indexOf(a.category)-order.indexOf(b.category)||a.name.localeCompare(b.name,'sl'));
+}
+function pdfWrapLines(ctx,value,maxWidth){
+ const lines=[];
+ for(const para of String(value??'').split(/\n/)){
+  let line='';
+  for(const word of para.split(/\s+/)){
+   if(!word)continue;
+   if(!line){line=word;continue;}
+   if(ctx.measureText(line+' '+word).width<=maxWidth){line+=' '+word;continue;}
+   lines.push(line);line=word;
+  }
+  lines.push(line||' ');
+ }
+ // Dolge kataloške oznake brez presledkov je mogoče razdeliti brez odrezanega besedila.
+ const result=[];
+ for(const line of lines){
+  if(ctx.measureText(line).width<=maxWidth){result.push(line);continue;}
+  let part='';
+  for(const ch of line){
+   if(part&&ctx.measureText(part+ch).width>maxWidth){result.push(part);part=ch;}
+   else part+=ch;
+  }
+  if(part)result.push(part);
+ }
+ return result;
+}
+function pdfMaterialPages(projectName,dateLabel){
+ const rows=pdfMaterials(),pages=[],W=2100,H=2970;
+ const left=95,right=2005,tableWidth=right-left;
+ const xName=176,xSpec=865,xQty=1740,xUnit=1875;
+ const cols=[left,xName,xSpec,xQty,xUnit,right];
+ let ctx,canvas,y,index=0,category='',pageNum=0;
+ const newPage=()=>{
+  if(canvas)pages.push(canvas);
+  canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+  ctx=canvas.getContext('2d',{alpha:false});
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#193b5f';ctx.font='bold 58px system-ui,Arial,sans-serif';
+  ctx.fillText('POPIS MATERIALA',left,100);
+  ctx.fillStyle='#445b70';ctx.font='32px system-ui,Arial,sans-serif';
+  ctx.fillText(projectName,left,165,tableWidth);
+  ctx.fillStyle='#6b8096';ctx.font='26px system-ui,Arial,sans-serif';
+  ctx.fillText('Izvoz: '+dateLabel+'  |  Popis iz trenutnega projekta',left,212);
+  y=264;pageNum++;
+  ctx.fillStyle='#234f79';ctx.fillRect(left,y,tableWidth,63);
+  ctx.fillStyle='#fff';ctx.font='bold 27px system-ui,Arial,sans-serif';
+  ctx.fillText('#',left+17,y+42);
+  ctx.fillText('OPIS MATERIALA',xName+15,y+42);
+  ctx.fillText('TIP / PROIZVAJALEC / OZNAKA',xSpec+14,y+42);
+  ctx.fillText('KOL.',xQty+15,y+42);
+  ctx.fillText('ENOTA',xUnit+14,y+42);
+  y+=64;
+ };
+ const bottom=2780;
+ const drawCategory=cat=>{
+  if(y+62>bottom){newPage();}
+  ctx.fillStyle='#eaf1f8';ctx.fillRect(left,y,tableWidth,55);
+  ctx.fillStyle='#214b73';ctx.font='bold 27px system-ui,Arial,sans-serif';
+  ctx.fillText(cat.toUpperCase(),left+20,y+37);
+  y+=55;
+ };
+ newPage();
+ for(const item of rows){
+  if(item.category!==category){category=item.category;drawCategory(category);}
+  ctx.font='bold 27px system-ui,Arial,sans-serif';
+  const titleLines=pdfWrapLines(ctx,item.name,xSpec-xName-35);
+  ctx.font='26px system-ui,Arial,sans-serif';
+  const specLines=pdfWrapLines(ctx,item.specification,xQty-xSpec-35);
+  const extra=item.comment?[item.comment]:[];
+  const count=Math.max(titleLines.length,specLines.length);
+  const rowH=Math.max(94,26+count*37+(extra.length?35:0)+14);
+  if(y+rowH>bottom){newPage();drawCategory(category);}
+  ctx.fillStyle=index%2?'#ffffff':'#f8fafc';ctx.fillRect(left,y,tableWidth,rowH);
+  ctx.strokeStyle='#e1e8ef';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(left,y+rowH-.5);ctx.lineTo(right,y+rowH-.5);ctx.stroke();
+  ctx.fillStyle='#39556f';ctx.font='27px system-ui,Arial,sans-serif';
+  ctx.fillText(String(index+1),left+20,y+45);
+  ctx.fillStyle='#203b58';ctx.font='bold 27px system-ui,Arial,sans-serif';
+  titleLines.forEach((s,j)=>ctx.fillText(s,xName+15,y+43+j*37));
+  ctx.fillStyle='#385771';ctx.font='26px system-ui,Arial,sans-serif';
+  specLines.forEach((s,j)=>ctx.fillText(s,xSpec+15,y+43+j*37));
+  ctx.fillStyle='#173d65';ctx.font='bold 28px system-ui,Arial,sans-serif';
+  ctx.fillText(String(item.qty),xQty+18,y+44);
+  ctx.font='27px system-ui,Arial,sans-serif';ctx.fillText(String(item.unit),xUnit+15,y+44);
+  if(extra.length){
+   ctx.fillStyle='#ab693c';ctx.font='23px system-ui,Arial,sans-serif';
+   ctx.fillText(extra[0],xName+15,y+rowH-17,Math.max(400,xQty-xName-50));
+  }
+  y+=rowH;index++;
+ }
+ // Zaključek: skupna količina in opomba; če se ne prilega, nova stran.
+ if(y+136>bottom)newPage();
+ ctx.fillStyle='#eaf1f8';ctx.fillRect(left,y+12,tableWidth,86);
+ ctx.fillStyle='#204d77';ctx.font='bold 28px system-ui,Arial,sans-serif';
+ const totalQty=rows.reduce((s,r)=>s+Number(r.qty||0),0);
+ ctx.fillText('SKUPAJ: '+rows.length+' postavk, '+totalQty+' kos/enot',left+24,y+66);
+ pages.push(canvas);
+ pages.forEach((c,i)=>{
+  const cc=c.getContext('2d');cc.strokeStyle='#d9e3ed';cc.lineWidth=2;
+  cc.beginPath();cc.moveTo(left,2853);cc.lineTo(right,2853);cc.stroke();
+  cc.fillStyle='#627990';cc.font='24px system-ui,Arial,sans-serif';
+  cc.fillText('Material je povzet iz trenutne risbe in ročnega popisa.',left,2900);
+  cc.fillText('Tipi in mere morajo biti preverjeni pred izvedbo.  |  Popis '+(i+1)+'/'+pages.length,left,2938);
+ });
+ return pages;
+}
+function exportPdfCanvasPages(canvases,filename){
+ const encoder=new TextEncoder(),chunks=[],offsets=[0];let size=0;
+ const write=chunk=>{const bytes=typeof chunk==='string'?encoder.encode(chunk):chunk;chunks.push(bytes);size+=bytes.length};
+ const obj=(n,content)=>{offsets[n]=size;write(n+' 0 obj\n'+content+'\nendobj\n');};
+ const n=canvases.length;
+ write('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+ obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+ obj(2,'<< /Type /Pages /Kids ['+canvases.map((_,i)=>(3+3*i)+' 0 R').join(' ')+'] /Count '+n+' >>');
+ for(let i=0;i<n;i++){
+  const pageId=3+3*i,contentsId=pageId+1,imageId=pageId+2;
+  const canvas=canvases[i],jpegBase64=canvas.toDataURL('image/jpeg',.89).split(',')[1];
+  const raw=atob(jpegBase64),jpeg=new Uint8Array(raw.length);
+  for(let k=0;k<raw.length;k++)jpeg[k]=raw.charCodeAt(k);
+  obj(pageId,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 '+imageId+' 0 R >> >> /Contents '+contentsId+' 0 R >>');
+  const c='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';
+  obj(contentsId,'<< /Length '+encoder.encode(c).length+' >>\nstream\n'+c+'endstream');
+  offsets[imageId]=size;
+  write(imageId+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+canvas.width+' /Height '+canvas.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');
+  write(jpeg);write('\nendstream\nendobj\n');
+ }
+ const xref=size,objectCount=2+n*3;
+ write('xref\n0 '+(objectCount+1)+'\n0000000000 65535 f \n');
+ for(let i=1;i<=objectCount;i++)write(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+ write('trailer\n<< /Size '+(objectCount+1)+' /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF');
+ saveFile(filename,new Blob(chunks,{type:'application/pdf'}));
+}
 async function exportSchemePDF(){
- const btn=$('pdfSchemeBtn');
- const oldLabel=btn.textContent;
- btn.disabled=true;btn.textContent='Pripravljam PDF …';
+ const btn=$('pdfSchemeBtn'),oldLabel=btn.textContent;
+ btn.disabled=true;btn.textContent='Pripravljam PDF in popis …';
  let svgUrl=null;
  try{
-  const svgElement=$('cabinetSvg');
-  const oldSelected=selected,oldView=viewMode,oldGrid=showGrid;
+  const svgElement=$('cabinetSvg'),oldSelected=selected,oldView=viewMode,oldGrid=showGrid;
   let clone;
   try{
-   selected=null; viewMode='full'; showGrid=false;drawCabinet();
+   selected=null;viewMode='full';showGrid=false;drawCabinet();
    clone=svgElement.cloneNode(true);
    clone.setAttribute('xmlns','http://www.w3.org/2000/svg');
    clone.setAttribute('width','660');clone.setAttribute('height','900');
    clone.setAttribute('viewBox','0 0 660 900');
-   clone.setAttribute('preserveAspectRatio','xMidYMid meet');
-   clone.removeAttribute('style');
-  }finally{
-   selected=oldSelected;viewMode=oldView;showGrid=oldGrid;drawCabinet();
-  }
+   clone.setAttribute('preserveAspectRatio','xMidYMid meet');clone.removeAttribute('style');
+  }finally{selected=oldSelected;viewMode=oldView;showGrid=oldGrid;drawCabinet();}
   const xml=new XMLSerializer().serializeToString(clone);
   svgUrl=URL.createObjectURL(new Blob([xml],{type:'image/svg+xml;charset=utf-8'}));
-  const img=new Image();
-  await new Promise((resolve,reject)=>{
-   img.onload=resolve;img.onerror=()=>reject(new Error('Risbe ni mogoče pretvoriti v sliko.'));
-   img.src=svgUrl;
-  });
+  const image=new Image();
+  await new Promise((resolve,reject)=>{image.onload=resolve;image.onerror=()=>reject(new Error('Risbe ni mogoče pretvoriti.'));image.src=svgUrl;});
   const page=document.createElement('canvas');page.width=2100;page.height=2970;
   const ctx=page.getContext('2d',{alpha:false});
-  if(!ctx)throw new Error('Brskalnik ne omogoča risanja PDF.');
+  if(!ctx)throw new Error('Brskalnik ne podpira risanja PDF.');
   ctx.fillStyle='#fff';ctx.fillRect(0,0,page.width,page.height);
   ctx.fillStyle='#193b5f';ctx.font='bold 58px system-ui,Arial,sans-serif';
   ctx.fillText('P/U RM 3 – MONTAŽNA SHEMA',95,85);
   ctx.fillStyle='#40546b';ctx.font='35px system-ui,Arial,sans-serif';
   const projectName=String(state.name||'Projekt').slice(0,95);
   ctx.fillText(projectName,95,148,1905);
-  ctx.drawImage(img,95,196,1910,2605);
+  ctx.drawImage(image,95,196,1910,2605);
   ctx.strokeStyle='#d8e2ec';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(95,2853);ctx.lineTo(2005,2853);ctx.stroke();
   ctx.fillStyle='#50667b';ctx.font='30px system-ui,Arial,sans-serif';
   const now=new Date().toLocaleDateString('sl-SI');
-  ctx.fillText('Izvoz: '+now+'  |  '+state.parts.filter(p=>!p.unplaced).length+' elementov',95,2900);
+  ctx.fillText('Izvoz: '+now+'  |  '+state.parts.filter(p=>!p.unplaced).length+' elementov na risbi',95,2900);
   ctx.font='26px system-ui,Arial,sans-serif';
   ctx.fillText('Idejna razporeditev – ni izvedbeni elektro načrt. Mere preveri pred montažo.',95,2937,1910);
-  // JPEG je podprt neposredno kot PDF XObject /DCTDecode; zunanjih knjižnic ne potrebujemo.
-  const jpegBase64=page.toDataURL('image/jpeg',.92).split(',')[1];
-  const raw=atob(jpegBase64),jpeg=new Uint8Array(raw.length);
-  for(let i=0;i<raw.length;i++)jpeg[i]=raw.charCodeAt(i);
-  const encoder=new TextEncoder(),chunks=[],offsets=[0];let size=0;
-  const write=chunk=>{const bytes=typeof chunk==='string'?encoder.encode(chunk):chunk;chunks.push(bytes);size+=bytes.length};
-  function obj(n,content){offsets[n]=size;write(n+' 0 obj\n'+content+'\nendobj\n')}
-  write('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
-  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
-  obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  obj(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>');
-  const content='q\n595.28 0 0 841.89 0 0 cm\n/Im0 Do\nQ\n';
-  obj(4,'<< /Length '+encoder.encode(content).length+' >>\nstream\n'+content+'endstream');
-  offsets[5]=size;
-  write('5 0 obj\n<< /Type /XObject /Subtype /Image /Width 2100 /Height 2970 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');
-  write(jpeg);write('\nendstream\nendobj\n');
-  const xref=size;
-  write('xref\n0 6\n0000000000 65535 f \n');
-  for(let i=1;i<=5;i++)write(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
-  write('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF');
-  saveFile(namePrefix()+'_shema.pdf',new Blob(chunks,{type:'application/pdf'}));
+  const pages=[page,...pdfMaterialPages(projectName,now)];
+  exportPdfCanvasPages(pages,namePrefix()+'_shema_in_popis.pdf');
  }catch(err){
   alert('PDF izvoza ni bilo mogoče pripraviti: '+(err?.message||err)+'\nUporabi Tisk / PDF.');
  }finally{
