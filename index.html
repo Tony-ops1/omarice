@@ -135,7 +135,7 @@ td,th{padding:9px 11px}
 </style></head>
 <body>
 <header class="top">
-  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.4</span></h1></div></div>
+  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.5</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
 <div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><button class="btn subtle" id="standardBtn">Vsi deli TS 30</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
@@ -429,17 +429,19 @@ function drawCabinet(){
  const base=`<defs><linearGradient id="cabbg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eaf0f6"/></linearGradient></defs><rect x="0" y="0" width="660" height="900" rx="11" fill="#fff"/><rect x="19" y="26" width="622" height="819" rx="11" fill="#dbe5ee" stroke="#9cacbc" stroke-width="2"/><rect x="31" y="38" width="598" height="793" rx="4" fill="url(#cabbg)" stroke="#647c95" stroke-width="3"/><rect x="52" y="88" width="556" height="333" rx="3" fill="#edf2f8" stroke="#96a8bb" stroke-width="2"/><rect x="52" y="445" width="556" height="365" rx="4" fill="#f5f8fb" stroke="#96a8bb" stroke-width="2"/>${[236,420].map(x=>`<line x1="${x}" y1="95" x2="${x}" y2="414" stroke="#b9c5d1" stroke-width="3"/>`).join('')}<rect x="52" y="422" width="556" height="16" fill="#a8bacb"/><text x="44" y="62" fill="#8295aa" font-size="13" font-weight="700">P/U RM 3 · ČELNI POGLED</text><text x="555" y="62" fill="#9caec2" font-size="12" text-anchor="end">660 mm</text><text x="40" y="862" font-size="11" fill="#8399ae">Mere in razpored so osnutek. Preveri na dejanski omarici.</text>${grid}`;
  const stageN=state.parts.filter(p=>p.unplaced).length;
  const staged=stageN?`<rect x="21" y="858" width="618" height="${Math.max(260,...state.parts.filter(p=>p.unplaced).map(p=>p.y+p.h-850+50))}" rx="11" fill="#fff9ef" stroke="#d9b881" stroke-width="2" stroke-dasharray="8 7"/><text x="43" y="888" font-size="16" font-weight="850" fill="#815b35">NEUMEŠČENI ELEMENTI (${stageN})</text><text x="43" y="906" font-size="10" fill="#866b4f">To ni montažno polje. Za vgradnjo uporabi »Umesti v omarico«.</text>`:'';
- const ordered=[...state.parts].sort((a,b)=>(kindOrder[catIndex[a.type]?.kind]??1)-(kindOrder[catIndex[b.type]?.kind]??1));
+ const zIndex=p=>p.id===selected?20:(viewMode==='busbars'&&p.type==='ct'?10:(kindOrder[catIndex[p.type]?.kind]??1));
+ const ordered=[...state.parts].sort((a,b)=>zIndex(a)-zIndex(b));
  const parts=ordered.map(p=>{
  const active=p.id===selected,struct=!isSolid(p),err=bad.has(p.id);
  const quiet=(p.type==='guard'||p.type==='touchcover')&&!active; // zaščiti ostaneta vidni, a umirjeni
-  if(p.type==='ct' && viewMode!=='busbars' && viewMode!=='staging')return ''; // tokovniki na ločenem shematskem pogledu zbiralk
-  if(viewMode==='busbars' && isSolid(p) && p.type!=='ct' && !active){
-   return `<g transform="translate(${p.x} ${p.y})" opacity=".28" pointer-events="none"><rect x="1" y="1" width="${p.w-2}" height="${p.h-2}" rx="7" fill="#e7f1fa" stroke="#90adc1" stroke-width="2" stroke-dasharray="8 5"/></g>`;
- }
+  // Tokovniki se pokažejo na zbiralkah, v celotni omarici in pri ločilnikih;
+  // na pogledu števca jih zaradi izreza ni treba risati.
+  if(p.type==='ct' && viewMode==='meter')return '';
+  // V pogledu zbiralk ostanejo vsi odklopniki VIDNI in jih je možno premikati.
+  // Tokovnike izrišemo pozneje, da niso prekriti z drugimi elementi.
  const stroke=active?'#ff9f50':err?'#db6b65':struct?'#5d9bc2':'#73899e';
  const showFrame=active||err;
- return `<g data-id="${escapeText(p.id)}" transform="translate(${p.x} ${p.y})" opacity="${quiet?.55:struct?.77:1}">${symbol(p,false,quiet)}${showFrame?`<rect x="-2" y="-2" width="${p.w+4}" height="${p.h+4}" fill="none" stroke="${stroke}" stroke-width="${active?3:2}" stroke-dasharray="${active?'7 5':'4 4'}" rx="4" pointer-events="none"/>`:''}</g>`;
+ return `<g data-id="${escapeText(p.id)}" transform="translate(${p.x} ${p.y})" opacity="${quiet?.55:struct?.77:1}">${isSolid(p)?`<rect x="0" y="0" width="${p.w}" height="${p.h}" fill="transparent" pointer-events="all"/>`:''}${symbol(p,false,quiet)}${showFrame?`<rect x="-2" y="-2" width="${p.w+4}" height="${p.h+4}" fill="none" stroke="${stroke}" stroke-width="${active?3:2}" stroke-dasharray="${active?'7 5':'4 4'}" rx="4" pointer-events="none"/>`:''}</g>`;
  }).join('');
  const dim=`<g font-size="12" fill="#8ca3b9"><path d="M45 876 H615" stroke="#9db4c7" stroke-width="1.6"/><path d="M45 871 V881 M615 871 V881" stroke="#9db4c7"/><text x="330" y="873" text-anchor="middle">660 mm (prikaz)</text></g>`;
  svg.innerHTML=base+staged+parts+dim;
@@ -559,6 +561,8 @@ function setView(mode){
  svg.style.aspectRatio=`${v.w} / ${v.h}`;
  document.querySelectorAll('.viewBtn').forEach(btn=>btn.classList.remove('active'));
  ({breakers:'viewBreakers',busbars:'viewBusbars',meter:'viewMeter',full:'viewFull',staging:'viewStaging'})[viewMode] && $(({breakers:'viewBreakers',busbars:'viewBusbars',meter:'viewMeter',full:'viewFull',staging:'viewStaging'})[viewMode]).classList.add('active');
+ // Risba je odvisna od aktivnega pogleda: ob preklopu MORAMO zgraditi SVG znova.
+ drawCabinet();
  setZoom(100);
 }
 function fitDrawing(){zoom=100;const container=$('svgScroll'); const v=views[viewMode];const width=Math.max(280,container.clientWidth-8);const svg=$('cabinetSvg');svg.style.width=`${width}px`;svg.style.height='auto';svg.style.aspectRatio=`${v.w} / ${v.h}`;$('zoomValue').textContent='100 %';container.scrollLeft=0;container.scrollTop=0;}
@@ -581,7 +585,7 @@ $('ctRatioSelect').addEventListener('change',e=>{
 });
 $('addCtSetBtn').onclick=ensureThreeCts;
 $('addMg9191Btn').onclick=ensureMg9191;
-$('showCtsBtn').onclick=()=>{setView('busbars');const p=state.parts.find(p=>p.type==='ct');if(p)choose(p.id)};
+$('showCtsBtn').onclick=()=>{const p=state.parts.find(p=>p.type==='ct');if(p)selected=p.id;setView('busbars');renderInspector();renderProjectItems();};
 $('importInput').addEventListener('change',e=>{importProject(e.target.files?.[0]);e.target.value='';});
 $('projectName').addEventListener('change',e=>{state.name=e.target.value.trim()||'P/U RM 3';afterChange()});
 $('addManualBtn').onclick=()=>{state.manual.push({id:'m'+Date.now(),name:'Nova postavka',model:'',qty:1,unit:'kos',price:0});afterChange()};
@@ -605,7 +609,12 @@ $('pRatio').addEventListener('change',e=>{const p=state.parts.find(v=>v.id===sel
 $('photoInput').onchange=e=>{const file=e.target.files?.[0];e.target.value='';if(!file||!file.type.startsWith('image/'))return;const id=selected;const img=new Image();const reader=new FileReader();reader.onload=()=>{img.onload=()=>{const c=document.createElement('canvas'),scale=Math.min(1,600/Math.max(img.width,img.height));c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const p=state.parts.find(v=>v.id===id);if(p){p.photo=c.toDataURL('image/jpeg',0.77);afterChange()}};img.src=reader.result};reader.readAsDataURL(file)};
 $('removePhotoBtn').onclick=()=>{const p=state.parts.find(v=>v.id===selected);if(p){p.photo='';afterChange()}};
 $('cabinetSvg').addEventListener('pointerdown',e=>{const group=e.target.closest('[data-id]');if(!group||(e.pointerType==='mouse'&&e.button!==0))return;const id=group.getAttribute('data-id'),p=state.parts.find(p=>p.id===id);if(!p)return;
- const pt=vectorPoint(e);selected=id;dragging={id,start:pt,x:p.x,y:p.y,origX:p.x,origY:p.y,moved:false};$('cabinetSvg').setPointerCapture(e.pointerId);choose(id);e.preventDefault();});
+ const pt=vectorPoint(e);selected=id;dragging={id,start:pt,x:p.x,y:p.y,origX:p.x,origY:p.y,moved:false};
+ // Pomembno: med dotikom ne kličemo choose()/drawCabinet(), saj bi zamenjava otrok SVG
+ // lahko prekinila zajem kazalca na telefonih in onemogočila premikanje.
+ try{$('cabinetSvg').setPointerCapture(e.pointerId)}catch(_e){}
+ renderInspector();renderWarnings();renderQuickButtons();renderProjectItems();
+ e.preventDefault();});
 $('cabinetSvg').addEventListener('pointermove',e=>{if(!dragging)return;const p=state.parts.find(p=>p.id===dragging.id);if(!p)return;const pt=vectorPoint(e);p.x=clamp(snap(dragging.x+pt.x-dragging.start.x),25,635-p.w);p.y=clamp(snap(dragging.y+pt.y-dragging.start.y),24,Math.max(838,p.y+20));dragging.moved=dragging.moved||(p.x!==dragging.origX||p.y!==dragging.origY);
  const group=[...$('cabinetSvg').querySelectorAll('[data-id]')].find(el=>el.getAttribute('data-id')===p.id);if(group)group.setAttribute('transform',`translate(${p.x} ${p.y})`);$('pX').value=p.x;$('pY').value=p.y;});
 function dragEnd(e){if(!dragging)return;const changed=dragging.moved;
