@@ -83,10 +83,10 @@ td,th{padding:9px 11px}
   <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 5.0</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
-<div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="exampleBtn">Osnovni primer</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
+<div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
 <div class="app-grid">
   <aside class="panel catalog-panel"><div class="panel-head"><div><span class="kicker">01 · KATALOG</span><h2>Komponente</h2></div><span class="count" id="catalogCount"></span></div><div class="searchbox">⌕ <input id="search" placeholder="Išči: HVL, števec, PEN ..." aria-label="Iskanje komponent"></div><div class="filters" id="filters"></div><div class="catalog-scroll" id="catalog"></div><div class="sidebar-tip">+ Dodaj element in ga povleci na svoje mesto. Za fotografijo konkretnega izdelka izberi element in uporabi možnost <b>Naloži sliko</b>.<p class="maker-links"><b>Primeri dejanskih tipov ETI:</b> <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690872-kvl-1-3p-m10-m10" target="_blank" rel="noopener">KVL-1 250 A</a> · <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690870-kvl-00-3p-m8-m8" target="_blank" rel="noopener">KVL-00 160 A</a>. Preveri, ali ustrezata izbranemu načinu montaže.</p></div></aside>
-  <main class="panel main-panel"><div class="main-head"><div><span class="kicker">02 · DELAVNA POVRŠINA</span><h2>Montažna razporeditev</h2><p>Povečani pogledi brez raztegovanja · privzeto odklopniki</p></div><div class="head-actions"><button type="button" class="btn subtle" id="focusBtn">⛶ Velik pogled</button><div class="head-tabs"><button class="tab active" id="tabDesign">Načrt</button><button class="tab" id="tabSource">Original TS 30</button></div></div></div>
+  <main class="panel main-panel"><div class="main-head"><div><span class="kicker">02 · DELAVNA POVRŠINA</span><h2>Montažna razporeditev</h2><p>Povečani pogledi brez raztegovanja · konfiguraciji 2 × 250 A ali 250 A + 2 × 160 A</p></div><div class="head-actions"><button type="button" class="btn subtle" id="focusBtn">⛶ Velik pogled</button><div class="head-tabs"><button class="tab active" id="tabDesign">Načrt</button><button class="tab" id="tabSource">Original TS 30</button></div></div></div>
    <div class="view-toolbar" role="group" aria-label="Območje prikaza">
     <button class="viewBtn active" id="viewBreakers">Odklopniki</button>
     <button class="viewBtn" id="viewMeter">Števec</button>
@@ -143,19 +143,38 @@ function findPlace(c,x,y){
  }
  return [clamp(c.zone==='top'?220:180,52,600-c.w),clamp(c.zone==='top'?110:500,90,810-c.h)];
 }
-function sampleState(){
- let i=0;
- function fixed(type,x,y,w,h){const c=catIndex[type];return {id:'s'+(++i),type,name:c.name,rating:c.rating||'',maker:'',model:'',qty:1,price:0,x,y,w,h,photo:''}}
- return {version:3,name:'P/U RM 3 – 250 A + 2 × 160 A',parts:[
+function baseLayoutParts(fixed){
+ return [
   fixed('plate',66,104,165,277),fixed('plate',247,104,165,277),fixed('plate',428,104,165,277),
   fixed('meter',92,165,111,176),
   fixed('partition',61,418,536,13),fixed('cables',72,790,508,22),fixed('bus60',70,490,520,196),
-  fixed('hvl1',128,554,184,172),fixed('hvl00',330,566,106,154),fixed('hvl00',452,566,106,154),
   fixed('spd',64,575,55,94),fixed('d02',64,692,55,85),
   fixed('pen',271,760,242,26),fixed('button',529,745,60,49),
   fixed('guard',59,460,542,310),fixed('touchcover',58,465,545,315),
- ],manual:[]};
+ ];
 }
+function sampleState250160(){
+ let i=0;
+ function fixed(type,x,y,w,h){const c=catIndex[type];return {id:'s'+(++i),type,name:c.name,rating:c.rating||'',maker:'',model:'',qty:1,price:0,x,y,w,h,photo:''}}
+ const parts=baseLayoutParts(fixed);
+ parts.push(
+  fixed('hvl1',114,556,184,166),
+  fixed('hvl00',322,566,106,146),
+  fixed('hvl00',444,566,106,146)
+ );
+ return {version:3,name:'P/U RM 3 – 250 A + 2 × 160 A',parts,manual:[]};
+}
+function sampleState2x250(){
+ let i=0;
+ function fixed(type,x,y,w,h){const c=catIndex[type];return {id:'s'+(++i),type,name:c.name,rating:c.rating||'',maker:'',model:'',qty:1,price:0,x,y,w,h,photo:''}}
+ const parts=baseLayoutParts(fixed);
+ parts.push(
+  fixed('hvl1',126,556,184,166),
+  fixed('hvl1',348,556,184,166)
+ );
+ return {version:3,name:'P/U RM 3 – 2 × 250 A',parts,manual:[]};
+}
+function sampleState(){return sampleState250160();}
 let state=sampleState();
 function pushHistory(){
  const s=JSON.stringify(state);
@@ -332,7 +351,8 @@ function pickByType(type,n=0){let parts=state.parts.filter(p=>p.type===type);if(
 $('search').addEventListener('input',e=>{search=e.target.value;renderCatalog()});
 $('undoBtn').onclick=undo;$('redoBtn').onclick=redo;
 $('newBtn').onclick=()=>{if(confirm('Želiš začeti prazen projekt? Pred tem shrani trenutnega kot JSON.')){state={version:3,name:'Nov projekt P/U RM 3',parts:[],manual:[]};selected=null;afterChange()}};
-$('exampleBtn').onclick=()=>{if(confirm('Naložim primer 250 A + 2 × 160 A? Trenutni projekt pred tem shrani kot JSON.')){state=sampleState();selected=null;afterChange()}};
+$('example250160Btn').onclick=()=>{if(confirm('Naložim primer 250 A + 2 × 160 A? Trenutni projekt pred tem shrani kot JSON.')){state=sampleState250160();selected=null;afterChange()}};
+$('example2x250Btn').onclick=()=>{if(confirm('Naložim primer 2 × 250 A? Trenutni projekt pred tem shrani kot JSON.')){state=sampleState2x250();selected=null;afterChange()}};
 $('saveBtn').onclick=saveProject;$('csvBtn').onclick=exportCSV;$('pngBtn').onclick=exportPNG;$('printBtn').onclick=()=>window.print();
 $('importInput').addEventListener('change',e=>{importProject(e.target.files?.[0]);e.target.value='';});
 $('projectName').addEventListener('change',e=>{state.name=e.target.value.trim()||'P/U RM 3';afterChange()});
