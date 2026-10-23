@@ -80,7 +80,7 @@ td,th{padding:9px 11px}
 </style></head>
 <body>
 <header class="top">
-  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 5.0</span></h1></div></div>
+  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.0</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
 <div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
@@ -310,7 +310,15 @@ function renderBom(){const rows=bomRows(),total=rows.reduce((s,r)=>s+r.qty*r.pri
  $('bomBody').querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{state.manual=state.manual.filter(v=>v.id!==b.dataset.remove);afterChange()});
  $('bomBody').querySelectorAll('[data-choose]').forEach(b=>b.onclick=()=>{choose(b.dataset.choose);$('designWrap').scrollIntoView({behavior:'smooth',block:'center'});});
 }
-function renderAll(){ $('projectName').value=state.name;renderCatalog();drawCabinet();renderInspector();renderWarnings();renderBom();}
+function renderQuickButtons(){
+ const picks=state.parts.filter(p=>p.type==='hvl1'||p.type==='hvl00').sort((a,b)=>a.x-b.x);
+ ['quick250','quick160a','quick160b'].forEach((id,i)=>{
+  const btn=$(id),part=picks[i];
+  btn.style.display=part?'':'none';
+  if(part)btn.textContent=(part.rating||catIndex[part.type].rating)+' A ('+(i+1)+')';
+ });
+}
+function renderAll(){ $('projectName').value=state.name;renderCatalog();drawCabinet();renderInspector();renderWarnings();renderBom();renderQuickButtons();}
 function saveFile(filename,blob){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
 function namePrefix(){return (state.name||'projekt').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,55)||'projekt';}
 function saveProject(){saveFile(namePrefix()+'.json',new Blob([JSON.stringify(state,null,2)],{type:'application/json'}))}
@@ -361,7 +369,10 @@ $('tabDesign').onclick=()=>setMode(false);$('tabSource').onclick=()=>setMode(tru
 $('zoomOut').onclick=()=>setZoom(zoom-15);$('zoomIn').onclick=()=>setZoom(zoom+15);$('fitBtn').onclick=fitDrawing;
 $('viewBreakers').onclick=()=>setView('breakers');$('viewBusbars').onclick=()=>{setView('busbars');const p=state.parts.find(p=>p.type==='bus60');if(p)choose(p.id)};$('viewMeter').onclick=()=>setView('meter');$('viewFull').onclick=()=>setView('full');
 $('focusBtn').onclick=()=>{document.body.classList.toggle('focus-mode');$('focusBtn').textContent=document.body.classList.contains('focus-mode')?'✕ Zapri veliki pogled':'⛶ Velik pogled';setTimeout(fitDrawing,20)};
-$('quick250').onclick=()=>pickByType('hvl1');$('quick160a').onclick=()=>pickByType('hvl00',0);$('quick160b').onclick=()=>pickByType('hvl00',1);$('quickMeter').onclick=()=>pickByType('meter');
+['quick250','quick160a','quick160b'].forEach((id,i)=>{ $(id).onclick=()=>{
+ const p=state.parts.filter(v=>v.type==='hvl1'||v.type==='hvl00').sort((a,b)=>a.x-b.x)[i];
+ if(p){choose(p.id);setView('breakers')}
+ }});$('quickMeter').onclick=()=>pickByType('meter');
 $('gridToggle').onchange=e=>{showGrid=e.target.checked;drawCabinet()};$('snapToggle').onchange=e=>{snapOn=e.target.checked};
 $('duplicateBtn').onclick=duplicateSelected;$('deleteBtn').onclick=removeSelected;
 const propMap={pName:'name',pRating:'rating',pQty:'qty',pMaker:'maker',pModel:'model',pPrice:'price',pX:'x',pY:'y',pW:'w',pH:'h'};
