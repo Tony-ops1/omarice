@@ -90,15 +90,19 @@ td,th{padding:9px 11px}
  .ct-settings .ct-note{flex:1 1 100%;margin:0;font-size:10px;line-height:1.45;color:#74889e}
  @media(max-width:790px){.ct-settings{padding:9px;gap:8px}.ct-heading{width:100%}.ct-field{flex:1 1 130px}.ct-settings .btn{flex:1 1 150px}.ct-settings #showCtsBtn{flex:1 1 130px}}
  @media print{.ct-settings{display:none!important}}
- </style></head>
+ .mg-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;border-top:1px solid #d9e6f1;margin-top:10px;padding-top:10px}
+.mg-controls>div{min-width:220px;flex:1}.mg-controls strong{font-size:12px;color:#214568;display:block}.mg-controls small{display:block;color:#6684a1;font-size:10px;margin-top:2px}
+.mg-controls .btn{font-size:11px}.mg-controls #mg9191Status{font-size:10px;color:#496b8c}
+@media(max-width:790px){.mg-controls{align-items:stretch}.mg-controls .btn{white-space:normal}.mg-controls>div{flex:1 1 100%}}
+</style></head>
 <body>
 <header class="top">
-  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.2</span></h1></div></div>
+  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1>P/U RM 3 <span class="version">Studio 6.3</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
 <div class="subbar"><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><button class="btn subtle" id="standardBtn">Vsi deli TS 30</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
 <div class="app-grid">
-  <aside class="panel catalog-panel"><div class="panel-head"><div><span class="kicker">01 · KATALOG</span><h2>Komponente</h2></div><span class="count" id="catalogCount"></span></div><div class="searchbox">⌕ <input id="search" placeholder="Išči: HVL, števec, sponka, PEN ..." aria-label="Iskanje komponent"></div><div class="filters" id="filters"></div><div class="catalog-scroll" id="catalog"></div><div class="sidebar-tip">+ Dodaj element in ga povleci na svoje mesto. Za fotografijo konkretnega izdelka izberi element in uporabi možnost <b>Naloži sliko</b>.<p class="maker-links"><b>Primeri dejanskih tipov ETI:</b> <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690872-kvl-1-3p-m10-m10" target="_blank" rel="noopener">KVL-1 250 A</a> · <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690870-kvl-00-3p-m8-m8" target="_blank" rel="noopener">KVL-00 160 A</a>. Preveri, ali ustrezata izbranemu načinu montaže.</p></div></aside>
+  <aside class="panel catalog-panel"><div class="panel-head"><div><span class="kicker">01 · KATALOG</span><h2>Komponente</h2></div><span class="count" id="catalogCount"></span></div><div class="searchbox">⌕ <input id="search" placeholder="Išči: HVL, števec, sponka, PEN ..." aria-label="Iskanje komponent"></div><div class="filters" id="filters"></div><div class="catalog-scroll" id="catalog"></div><div class="sidebar-tip">+ Dodaj element in ga povleci na svoje mesto. Za fotografijo konkretnega izdelka izberi element in uporabi možnost <b>Naloži sliko</b>.<p class="maker-links"><b>Primeri dejanskih tipov ETI:</b> <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690872-kvl-1-3p-m10-m10" target="_blank" rel="noopener">KVL-1 250 A</a> · <a href="https://www.eti.si/izdelki/talilni-vlozki-nv/nv-horizontalni-varovalcni-locilniki/001690870-kvl-00-3p-m8-m8" target="_blank" rel="noopener">KVL-00 160 A</a>. Preveri, ali ustrezata izbranemu načinu montaže.</p><p class="maker-links"><b>Merilna garnitura:</b> <a target="_blank" rel="noopener" href="https://marchiol.si/izdelek/sponka-za-merilno-garnituro-komplet-9191">SM Strojkoplast · MG-LM / 9191</a> (odklopnik je sestavni del kompleta, brez SPD).</p></div></aside>
   <main class="panel main-panel"><div class="main-head"><div><span class="kicker">02 · DELAVNA POVRŠINA</span><h2>Montažna razporeditev</h2><p>Povečani pogledi brez raztegovanja · konfiguraciji 2 × 250 A ali 250 A + 2 × 160 A</p></div><div class="head-actions"><button type="button" class="btn subtle" id="focusBtn">⛶ Velik pogled</button><div class="head-tabs"><button class="tab active" id="tabDesign">Načrt</button><button class="tab" id="tabSource">Original TS 30</button></div></div></div>
    <div class="view-toolbar" role="group" aria-label="Območje prikaza">
     <button class="viewBtn active" id="viewBreakers">Odklopniki</button>
@@ -112,6 +116,7 @@ td,th{padding:9px 11px}
      <button type="button" class="btn subtle" id="addCtSetBtn">+ Dodaj / dopolni 3 tokovnike</button>
      <span id="ctStatus" aria-live="polite">3 × merilni tokovnik</span>
      <button type="button" class="toolBtn" id="showCtsBtn">Prikaži tokovnike</button>
+     <div class="mg-controls" aria-label="Merilna garnitura 9191"><div><strong>Merilna garnitura MG-LM · 9191</strong><small>SM Strojkoplast · merilni spončni komplet z vgrajenim inštalacijskim odklopnikom</small></div><button type="button" class="btn subtle" id="addMg9191Btn">+ Dodaj komplet 9191</button><span id="mg9191Status" aria-live="polite">Ni dodane garniture</span></div>
      <p class="ct-note">Prikaz na treh faznih zbiralkah je shematski. Dejanski tip, položaj, prestavo, polariteto in merilno vezavo je treba potrditi glede na projekt.</p>
    </div>
    <div class="busbar-hint" id="busbarHint">3 fazne zbiralke BUS 60; 3 × TA je shematsko prikazano na L1/L2/L3. Razmak osi 60 mm ni merilo risbe. Mere tokovnikov, zbiralk in montažo preveri.</div><div class="canvas-wrap" id="designWrap"><div class="svg-scroll" id="svgScroll"><svg id="cabinetSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 435 660 390" role="img" aria-label="Urejevalnik montažne razporeditve omarice"></svg></div></div>
@@ -143,6 +148,7 @@ const catalog=[
  {id:'plate',cat:'Konstrukcija',name:'Števčna plošča (univerzalna)',detail:'TS 30 · sestavni del 1',w:165,h:277,rating:'',zone:'top',kind:'structure',short:'Plošča',slots:[[66,104],[247,104],[428,104]],std:3},
  {id:'meter',cat:'Merjenje',name:'Trifazni elektronski števec',detail:'TS 30 · sestavni del 2 · generičen prikaz',w:102,h:160,rating:'',zone:'top',kind:'device',short:'Števec',slots:[[98,172],[279,172],[460,172]],std:3},
  {id:'mterm',cat:'Merjenje',name:'Merilna sponka',detail:'Dodatek · pod števcem · tip in število polov nastavi sam',w:120,h:32,rating:'',zone:'top',kind:'device',short:'M. sponka',slots:[[88,345],[269,345],[450,345]],std:0},
+ {id:'mg9191',cat:'Merjenje',name:'Merilna garnitura – komplet 9191',detail:'SM Strojkoplast · MG-LM · komplet merilnih sponk z inštalacijskim odklopnikom (brez SPD)',w:142,h:62,rating:'',zone:'top',kind:'device',short:'MG-LM 9191',slots:[[86,346],[267,346],[447,346]],std:0},
  {id:'ct',cat:'Merjenje',name:'Merilni tokovni transformator',detail:'3 × TA na L1 / L2 / L3 · izbira prestave 100/5–400/5 A · simbolni prikaz',w:58,h:54,rating:'100/5',zone:'bottom',kind:'device',short:'Tokovnik',slots:[[248,498],[248,560],[248,622]],std:0},
  {id:'partition',cat:'Konstrukcija',name:'Mehanska pregrada',detail:'TS 30 · sestavni del 3',w:536,h:13,rating:'',zone:'bottom',kind:'structure',short:'Pregrada',slots:[[61,418]],std:1},
  {id:'guard',cat:'Konstrukcija',name:'Mehanska zaščita dotika (snemljiva)',detail:'TS 30 · sestavni del 4',w:542,h:310,rating:'',zone:'bottom',kind:'structure',short:'Zaščita 4',slots:[[59,460]],std:1},
@@ -187,12 +193,12 @@ function newPart(type,x=null,y=null){
  const c=catIndex[type]||catIndex.custom;
  const id='p'+Date.now()+'_'+Math.floor(Math.random()*1e7);
  const placement= findPlace(c,x,y);
- return {id,type,name:c.name,rating:c.rating||'',maker:'',model:'',qty:1,price:0,x:placement[0],y:placement[1],w:c.w,h:c.h,photo:''};
+ return {id,type,name:c.name,rating:c.rating||'',maker:type==='mg9191'?'SM Strojkoplast':'',model:type==='mg9191'?'MG-LM / 9191':'',qty:1,price:0,x:placement[0],y:placement[1],w:c.w,h:c.h,photo:''};
 }
 function baseLayoutParts(fixed){
  return [
   fixed('plate',66,104,165,277),fixed('plate',247,104,165,277),fixed('plate',428,104,165,277),
-  fixed('meter',92,165,111,176),fixed('mterm',88,345,120,32),
+  fixed('meter',92,165,111,176),fixed('mg9191',86,346,142,62),
   fixed('partition',61,418,536,13),fixed('cables',72,790,508,22),fixed('bus60',70,490,520,196),
   fixed('spd',64,575,55,94),fixed('d02',64,692,55,85),
   fixed('pen',271,760,242,26),fixed('button',529,745,60,49),
@@ -200,7 +206,7 @@ function baseLayoutParts(fixed){
   fixed('ct',248,498,58,54),fixed('ct',248,560,58,54),fixed('ct',248,622,58,54),
   ];
 }
-function mkFixed(){let i=0;return function fixed(type,x,y,w,h){const c=catIndex[type];return {id:'s'+(++i),type,name:c.name,rating:c.rating||'',maker:'',model:'',qty:1,price:0,x,y,w,h,photo:''}}}
+function mkFixed(){let i=0;return function fixed(type,x,y,w,h){const c=catIndex[type];return {id:'s'+(++i),type,name:c.name,rating:c.rating||'',maker:type==='mg9191'?'SM Strojkoplast':'',model:type==='mg9191'?'MG-LM / 9191':'',qty:1,price:0,x,y,w,h,photo:''}}}
 function sampleState250160(){
  const fixed=mkFixed(),parts=baseLayoutParts(fixed);
  parts.push(fixed('hvl1',128,554,184,166),fixed('hvl00',322,566,106,146),fixed('hvl00',444,566,106,146));
@@ -301,6 +307,15 @@ function structuralDrawing(p,quiet=false){
    const ratio=escapeText(String(p.rating||'100/5')+' A'),cx=w/2,cy=25;
    return `<g><circle cx="${cx}" cy="${cy}" r="22" fill="#dce5ed" stroke="#64788d" stroke-width="2.3"/><circle cx="${cx}" cy="${cy}" r="11" fill="#b77c46" stroke="#8d5b32" stroke-width="1.3"/><path d="M ${cx-9} ${cy-4} H ${cx+9}" stroke="#ecc498" stroke-width="2"/><rect x="7" y="45" width="${w-14}" height="9" rx="3" fill="#f5f8fc" stroke="#91a3b6"/><text x="${cx}" y="52" text-anchor="middle" font-size="8.8" font-weight="850" fill="#174169">${ratio}</text><circle cx="11" cy="13" r="2.5" fill="#455c73"/><circle cx="47" cy="13" r="2.5" fill="#455c73"/></g>`;
   }
+ if(p.type==='mg9191'){
+  const margin=5,top=19,terminalCount=12,breakerW=Math.max(30,w*.275),terminalW=w-breakerW-15,cellW=terminalW/terminalCount;
+  const cells=Array.from({length:terminalCount},(_,i)=>{
+   const x=margin+3+i*cellW;const bg=i<6?'#fffcf1':i<9?'#e5e9f5':'#eaf3fd';
+   return `<rect x="${fmt(x)}" y="${top+2}" width="${fmt(cellW-1)}" height="${h-top-7}" rx="1.7" fill="${bg}" stroke="#afbbc8" stroke-width=".8"/><circle cx="${fmt(x+cellW/2)}" cy="${top+13}" r="2.3" fill="#64798f"/><circle cx="${fmt(x+cellW/2)}" cy="${h-14}" r="2.3" fill="#64798f"/>`;
+  }).join('');
+  const breakerX=w-margin-breakerW;
+  return `<rect x="1.5" y="1.5" width="${w-3}" height="${h-3}" rx="5" fill="#fdfefe" stroke="#758ca3" stroke-width="2"/><path d="M 5 18 H ${w-5}" stroke="#c6d2de"/><text x="7" y="13" font-size="10" fill="#24517a" font-weight="850">MG-LM · 9191</text>${cells}<rect x="${fmt(breakerX)}" y="${top+1}" width="${fmt(breakerW)}" height="${h-top-6}" rx="2" fill="#e5ebf0" stroke="#8499ad" stroke-width="1.2"/>${[0,1,2].map(i=>{const pw=breakerW/3,xx=breakerX+i*pw;return `<rect x="${fmt(xx+1.3)}" y="${top+4}" width="${fmt(pw-2.6)}" height="${h-top-12}" rx="2" fill="#fefefe" stroke="#a7b8c6" stroke-width=".9"/><rect x="${fmt(xx+pw/2-2.5)}" y="${top+13}" width="5" height="13" rx="1.3" fill="#485e70"/>`}).join('')}<text x="${fmt(breakerX+breakerW/2)}" y="${h-7}" font-size="7" fill="#49637d" font-weight="800" text-anchor="middle">3P</text>`;
+ }
  if(p.type==='mterm'){const n=Math.max(3,Math.floor((w-10)/13)),cw=(w-10)/n,r=Math.max(1.5,Math.min(4,cw/3.4));
   return `<rect x="1.5" y="1.5" width="${w-3}" height="${h-3}" rx="4" fill="#f3f0f8" stroke="#6f4f98" stroke-width="2"/>${Array.from({length:n},(_,i)=>{const cx=5+i*cw+cw/2;return `<rect x="${fmt(5+i*cw+1)}" y="4.5" width="${fmt(cw-2)}" height="${fmt(h-9)}" rx="2" fill="#fff" stroke="#b9a9d1"/><circle cx="${fmt(cx)}" cy="${fmt(h*.37)}" r="${fmt(r)}" fill="#7b6a91" stroke="#4b3a66"/><rect x="${fmt(cx-1.8)}" y="${fmt(h*.6)}" width="3.6" height="${fmt(h*.24)}" rx="1" fill="#d4cce2"/>`}).join('')}`;}
  if(p.type==='partition')return `<rect x="0" y="1" width="${w}" height="${h-2}" rx="2" fill="#becbda" stroke="#8399b0" stroke-width="1"/><path d="M 5 ${h/3} H ${w-5}" stroke="#e9f0f7" stroke-width="2"/>`;
@@ -320,6 +335,7 @@ const RATING_IN_ART=['hvl00','hvl1','d02','breaker','ct'];
 const RATIOS=['100/5','150/5','200/5','250/5','300/5','400/5'];
 function symbol(p,small=false,quiet=false){
  const art=drawing(p.type,p.rating,p.photo);
+ if(small && p.type==='mg9191'){const w=p.w||142,h=p.h||62;return `<svg width="56" height="46" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${structuralDrawing({...p,w,h})}</svg>`;}
  if(small)return `<svg width="52" height="52" viewBox="0 0 160 180" preserveAspectRatio="xMidYMid meet">${art}</svg>`;
  const native=structuralDrawing(p,quiet);
  const content=native!==null?native:`<svg x="0" y="0" width="${p.w}" height="${p.h}" viewBox="0 0 160 180" preserveAspectRatio="xMidYMid meet">${art}</svg>`;
@@ -373,7 +389,7 @@ function renderBom(){const rows=bomRows(),total=rows.reduce((s,r)=>s+r.qty*r.pri
 }
 // Gumbi za hitro izbiro: odklopniki, števci in merilne sponke, ki so trenutno na risbi.
 function renderQuickButtons(){
- const order=['hvl1','hvl00','d02','breaker','meter','mterm','ct'];
+ const order=['hvl1','hvl00','d02','breaker','meter','mg9191','mterm','ct'];
  const picks=state.parts.filter(p=>order.includes(p.type)).sort((a,b)=>order.indexOf(a.type)-order.indexOf(b.type)||a.x-b.x||a.y-b.y);
  const base=p=>p.rating&&p.type!=='mterm'&&p.type!=='meter'?`${p.rating} A`:catIndex[p.type].short;
  const total={},seen={};picks.forEach(p=>{const b=base(p);total[b]=(total[b]||0)+1});
@@ -398,7 +414,17 @@ function ensureThreeCts(){
  selected=state.parts.find(p=>p.type==='ct')?.id||null;
  afterChange();setView('busbars');
 }
-function renderAll(){ $('projectName').value=state.name;renderCatalog();drawCabinet();renderInspector();renderWarnings();renderBom();renderQuickButtons();renderCtSettings();}
+function renderMg9191(){
+ const mg=state.parts.filter(p=>p.type==='mg9191');
+ $('mg9191Status').textContent=mg.length?`✓ ${mg.length} × MG-LM 9191 v popisu`:'Ni dodane garniture';
+ $('addMg9191Btn').textContent=mg.length?'Prikaži garnituro 9191':'+ Dodaj komplet 9191';
+}
+function ensureMg9191(){
+ let p=state.parts.find(p=>p.type==='mg9191');
+ if(!p){p=newPart('mg9191');state.parts.push(p);afterChange();}
+ selected=p.id;choose(p.id);setView('meter');
+}
+function renderAll(){ $('projectName').value=state.name;renderCatalog();drawCabinet();renderInspector();renderWarnings();renderBom();renderQuickButtons();renderCtSettings();renderMg9191();}
 function saveFile(filename,blob){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
 function namePrefix(){return (state.name||'projekt').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9_-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,55)||'projekt';}
 function saveProject(){saveFile(namePrefix()+'.json',new Blob([JSON.stringify(state,null,2)],{type:'application/json'}))}
@@ -451,6 +477,7 @@ $('ctRatioSelect').addEventListener('change',e=>{
  parts.forEach(p=>p.rating=value);afterChange();
 });
 $('addCtSetBtn').onclick=ensureThreeCts;
+$('addMg9191Btn').onclick=ensureMg9191;
 $('showCtsBtn').onclick=()=>{setView('busbars');const p=state.parts.find(p=>p.type==='ct');if(p)choose(p.id)};
 $('importInput').addEventListener('change',e=>{importProject(e.target.files?.[0]);e.target.value='';});
 $('projectName').addEventListener('change',e=>{state.name=e.target.value.trim()||'P/U RM 3';afterChange()});
