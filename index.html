@@ -190,7 +190,7 @@ td,th{padding:9px 11px}
 </style></head>
 <body>
 <header class="top">
-  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1><span id="cabinetTitle">P/U RM 3</span> <span class="version">Studio 8.0</span></h1></div></div>
+  <div class="brand"><span class="brand-icon">◫</span><div><div class="eyebrow">ELEKTRO PROJEKTANT · LOKALNA APLIKACIJA</div><h1><span id="cabinetTitle">P/U RM 3</span> <span class="version">Studio 8.1</span></h1></div></div>
   <div class="top-actions"><span class="save-status" id="saveStatus">Lokalno shranjeno</span><button class="btn ghost" id="undoBtn" title="Razveljavi (Ctrl+Z)">↶ <span>Razveljavi</span></button><button class="btn ghost" id="redoBtn" title="Uveljavi (Ctrl+Y)">↷ <span>Uveljavi</span></button><button class="btn primary" id="saveBtn">↓ Shrani projekt</button></div>
 </header>
 <div class="subbar"><div class="cabinet-choice"><label for="cabinetType">TIP OMARICE</label><select id="cabinetType" aria-label="Izbira tipa omarice"><option value="rm3">P/U RM 3</option><option value="pm2">P/U PM2</option></select></div><div class="projectline"><span class="projlabel">PROJEKT</span><input id="projectName" aria-label="Ime projekta" value="P/U RM 3 – 250 A + 2 × 160 A"><span class="chip" id="elementsCount">0 elementov</span></div><div class="subactions"><button class="btn subtle" id="newBtn">Nov projekt</button><button class="btn subtle" id="example250160Btn">Primer 250 A + 2 × 160 A</button><button class="btn subtle" id="example250125Btn">Primer 250 A + 2 × 125 A</button><button class="btn subtle" id="example2x250Btn">Primer 2 × 250 A</button><button class="btn subtle" id="standardBtn">Vsi deli TS 30</button><label class="btn subtle importlbl">Odpri JSON<input type="file" id="importInput" accept=".json,application/json" hidden></label><button class="btn subtle" id="csvBtn">↓ CSV popis</button><button class="btn subtle" id="pngBtn">↓ PNG risba</button><button class="btn primary" id="pdfSchemeBtn" title="Prenesi trenutno montažno shemo skupaj s celotnim popisom materiala">↓ PDF shema + popis</button><button class="btn subtle" id="printBtn">Tisk / PDF</button></div></div>
@@ -604,17 +604,65 @@ function realisticDevice(p){
 function wireColor(kind){return ({L1:'#bd3f3f',L2:'#9c682e',L3:'#454c5f',N:'#258bbb',PE:'#2c9467',PEN:'#9f8540',MER:'#8a55a9',SIG:'#638399'})[kind]||'#8a55a9'}
 function validLinks(){const ids=new Set(state.parts.map(p=>p.id));return (Array.isArray(state.links)?state.links:[]).filter(l=>ids.has(l.a)&&ids.has(l.b)&&l.a!==l.b)}
 function wireOverlay(){
- const wire=validLinks();if(!wire.length)return '';
+ const links=validLinks().filter(l=>{
+  const a=state.parts.find(p=>p.id===l.a),b=state.parts.find(p=>p.id===l.b);
+  return a&&b&&!a.unplaced&&!b.unplaced;
+ });
+ if(!links.length)return '<g class="wires-layer" pointer-events="none"></g>';
  const byId=new Map(state.parts.map(p=>[p.id,p]));
- return `<g class="wires-layer" pointer-events="none">${wire.map((l,i)=>{
+ const pairs=new Map();
+ const paths=links.map((l)=>{
   const a=byId.get(l.a),b=byId.get(l.b);
-  const ax=a.x+a.w/2,ay=a.y+a.h/2,bx=b.x+b.w/2,by=b.y+b.h/2;
-  const horiz=Math.abs(bx-ax)>Math.abs(by-ay)*1.2;
-  const path=horiz?`M ${ax} ${ay} H ${(ax+bx)/2} V ${by} H ${bx}`:`M ${ax} ${ay} V ${(ay+by)/2} H ${bx} V ${by}`;
-  const midx=(ax+bx)/2,midy=(ay+by)/2;
+  const key=[l.a,l.b].sort().join('|');
+  const n=pairs.get(key)||0;pairs.set(key,n+1);
+  return {l,a,b,key,index:n};
+ });
+ const fmt=n=>Number(n.toFixed(2));
+ const curveAt=(p0,p1,p2,p3,t)=>Math.pow(1-t,3)*p0+3*Math.pow(1-t,2)*t*p1+3*(1-t)*t*t*p2+t*t*t*p3;
+ return `<g class="wires-layer" pointer-events="none">${paths.map(({l,a,b,key,index})=>{
+  const count=pairs.get(key);
+  const offset=(index-(count-1)/2)*11;
+  const acx=a.x+a.w/2,acy=a.y+a.h/2,bcx=b.x+b.w/2,bcy=b.y+b.h/2;
+  const dx=bcx-acx,dy=bcy-acy;
+  const gapX=Math.abs(dx)-(a.w+b.w)/2,gapY=Math.abs(dy)-(a.h+b.h)/2;
+  const horizontal=(gapX>10&&gapX>=gapY)||(gapY<5&&Math.abs(dx)>Math.abs(dy));
+  let sx,sy,tx,ty,c1x,c1y,c2x,c2y,pathD=null,labelX=null,labelY=null;
+  // Ko se dva ločilnika skoraj dotikata, povezavo elegantno speljemo nad njima.
+  if(horizontal&&gapX<28&&Math.abs(dx)>40){
+   const dir=dx>=0?1:-1;
+   sx=Math.max(a.x+9,Math.min(a.x+a.w-9,acx+offset));
+   tx=Math.max(b.x+9,Math.min(b.x+b.w-9,bcx+offset));
+   sy=a.y-2;ty=b.y-2;
+   const lane=Math.max(75,Math.min(a.y,b.y)-34-Math.abs(offset)*.6);
+   const r=Math.min(12,Math.abs(tx-sx)/4,Math.max(6,(Math.min(sy,ty)-lane)/2));
+   pathD=`M ${fmt(sx)} ${fmt(sy)} V ${fmt(lane+r)} Q ${fmt(sx)} ${fmt(lane)} ${fmt(sx+dir*r)} ${fmt(lane)} H ${fmt(tx-dir*r)} Q ${fmt(tx)} ${fmt(lane)} ${fmt(tx)} ${fmt(lane+r)} V ${fmt(ty)}`;
+   labelX=fmt((sx+tx)/2);labelY=fmt(lane-1);
+  }else if(horizontal){
+   const dir=dx>=0?1:-1;
+   sx=acx+dir*(a.w/2+2);tx=bcx-dir*(b.w/2+2);
+   sy=Math.max(a.y+7,Math.min(a.y+a.h-7,acy+offset));
+   ty=Math.max(b.y+7,Math.min(b.y+b.h-7,bcy+offset));
+   const handle=Math.min(115,Math.abs(tx-sx)*.43);
+   c1x=sx+dir*handle;c1y=sy;c2x=tx-dir*handle;c2y=ty;
+  }else{
+   const dir=dy>=0?1:-1;
+   sy=acy+dir*(a.h/2+2);ty=bcy-dir*(b.h/2+2);
+   sx=Math.max(a.x+7,Math.min(a.x+a.w-7,acx+offset));
+   tx=Math.max(b.x+7,Math.min(b.x+b.w-7,bcx+offset));
+   const handle=Math.min(115,Math.max(18,Math.abs(ty-sy)*.45));
+   c1x=sx;c1y=sy+dir*handle;c2x=tx;c2y=ty-dir*handle;
+  }
+  const d=pathD||`M ${fmt(sx)} ${fmt(sy)} C ${fmt(c1x)} ${fmt(c1y)} ${fmt(c2x)} ${fmt(c2y)} ${fmt(tx)} ${fmt(ty)}`;
+  const midx=labelX??fmt(curveAt(sx,c1x,c2x,tx,.5));
+  const midy=labelY??fmt(curveAt(sy,c1y,c2y,ty,.5));
   const color=wireColor(l.kind);
-  return `<path d="${path}" stroke="white" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" fill="none"/><path d="${path}" stroke="${color}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" fill="none"/><circle cx="${ax}" cy="${ay}" r="5" fill="${color}" stroke="white" stroke-width="2"/><circle cx="${bx}" cy="${by}" r="5" fill="${color}" stroke="white" stroke-width="2"/><rect x="${midx-19}" y="${midy-10}" width="38" height="19" rx="9" fill="white" stroke="${color}"/><text x="${midx}" y="${midy+3}" fill="${color}" text-anchor="middle" font-size="11" font-weight="850">${escapeText(l.kind)}</text>`;
+  return `<g data-link="${escapeText(l.id)}"><path d="${d}" stroke="white" stroke-width="10" stroke-linecap="round" fill="none"/><path class="wire-line" d="${d}" stroke="${color}" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="${fmt(sx)}" cy="${fmt(sy)}" r="4.5" fill="${color}" stroke="white" stroke-width="1.8"/><circle cx="${fmt(tx)}" cy="${fmt(ty)}" r="4.5" fill="${color}" stroke="white" stroke-width="1.8"/><rect x="${midx-17}" y="${midy-10}" width="34" height="19" rx="9.5" fill="white" stroke="${color}"/><text x="${midx}" y="${midy+3}" fill="${color}" text-anchor="middle" font-size="11" font-weight="850">${escapeText(l.kind)}</text></g>`;
  }).join('')}</g>`;
+}
+function updateWireOverlay(){
+ if(drawMode!=='wires')return;
+ const existing=$('cabinetSvg').querySelector('.wires-layer');
+ if(existing)existing.outerHTML=wireOverlay();
 }
 function renderWireList(){
  const panel=$('wirePanel');if(!panel)return;
@@ -1051,17 +1099,39 @@ $('pRatio').addEventListener('change',e=>{const p=state.parts.find(v=>v.id===sel
 $('photoInput').onchange=e=>{const file=e.target.files?.[0];e.target.value='';if(!file||!file.type.startsWith('image/'))return;const id=selected;const img=new Image();const reader=new FileReader();reader.onload=()=>{img.onload=()=>{const c=document.createElement('canvas'),scale=Math.min(1,600/Math.max(img.width,img.height));c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);const p=state.parts.find(v=>v.id===id);if(p){p.photo=c.toDataURL('image/jpeg',0.77);afterChange()}};img.src=reader.result};reader.readAsDataURL(file)};
 $('removePhotoBtn').onclick=()=>{const p=state.parts.find(v=>v.id===selected);if(p){p.photo='';afterChange()}};
 $('cabinetSvg').addEventListener('pointerdown',e=>{const group=e.target.closest('[data-id]');if(!group||(e.pointerType==='mouse'&&e.button!==0))return;const id=group.getAttribute('data-id'),p=state.parts.find(p=>p.id===id);if(!p)return;
- if(drawMode==='wires'){wirePick(id);e.preventDefault();return;}
- const pt=vectorPoint(e);selected=id;dragging={id,start:pt,x:p.x,y:p.y,origX:p.x,origY:p.y,moved:false};
+ const pt=vectorPoint(e);selected=id;
+ dragging={id,pointerId:e.pointerId,start:pt,x:p.x,y:p.y,origX:p.x,origY:p.y,moved:false};
  try{$('cabinetSvg').setPointerCapture(e.pointerId)}catch(_e){}
- renderInspector();renderWarnings();renderQuickButtons();renderProjectItems();
+ if(drawMode!=='wires'){renderInspector();renderWarnings();renderQuickButtons();renderProjectItems();}
  e.preventDefault();});
-$('cabinetSvg').addEventListener('pointermove',e=>{if(!dragging)return;const p=state.parts.find(p=>p.id===dragging.id);if(!p)return;const pt=vectorPoint(e);p.x=clamp(snap(dragging.x+pt.x-dragging.start.x),currentCabinet==='pm2'?133:25,(currentCabinet==='pm2'?526:635)-p.w);p.y=clamp(snap(dragging.y+pt.y-dragging.start.y),24,Math.max(838,p.y+20));dragging.moved=dragging.moved||(p.x!==dragging.origX||p.y!==dragging.origY);
- const group=[...$('cabinetSvg').querySelectorAll('[data-id]')].find(el=>el.getAttribute('data-id')===p.id);if(group)group.setAttribute('transform',`translate(${p.x} ${p.y})`);$('pX').value=p.x;$('pY').value=p.y;});
-function dragEnd(e){if(!dragging)return;const changed=dragging.moved;
- const p=state.parts.find(v=>v.id===dragging.id);
- if(p&&p.unplaced){const z=ZONES[catIndex[p.type]?.zone]||ZONES.bottom;if(p.x>=z.x0&&p.y>=z.y0&&p.x+p.w<=z.x1&&p.y+p.h<=z.y1&&!hitsSolid(p,p.id))p.unplaced=false;}
- dragging=null;if(changed)afterChange();else drawCabinet();}
+$('cabinetSvg').addEventListener('pointermove',e=>{
+ if(!dragging||e.pointerId!==dragging.pointerId)return;
+ const p=state.parts.find(v=>v.id===dragging.id);if(!p)return;
+ const pt=vectorPoint(e),dx=pt.x-dragging.start.x,dy=pt.y-dragging.start.y;
+ // Majhen premik prsta je še vedno tap za izbiro povezave.
+ if(!dragging.moved&&Math.hypot(dx,dy)<3)return;
+ dragging.moved=true;
+ p.x=clamp(dragging.x+dx,currentCabinet==='pm2'?133:25,(currentCabinet==='pm2'?526:635)-p.w);
+ p.y=clamp(dragging.y+dy,24,Math.max(838,dragging.y+dy+20));
+ const group=[...$('cabinetSvg').querySelectorAll('[data-id]')].find(el=>el.getAttribute('data-id')===p.id);
+ if(group)group.setAttribute('transform',`translate(${p.x} ${p.y})`);
+ // Povezave se premikajo tekoče z napravo, brez ponovnega izrisa cele omarice.
+ updateWireOverlay();
+ if(drawMode!=='wires'){$('pX').value=Number(p.x.toFixed(1));$('pY').value=Number(p.y.toFixed(1));}
+});
+function dragEnd(e){
+ if(!dragging||e.pointerId!==dragging.pointerId)return;
+ const changed=dragging.moved,id=dragging.id;
+ const p=state.parts.find(v=>v.id===id);
+ if(changed&&p){
+  p.x=snap(p.x);p.y=snap(p.y);
+  if(p.unplaced){const z=ZONES[catIndex[p.type]?.zone]||ZONES.bottom;if(p.x>=z.x0&&p.y>=z.y0&&p.x+p.w<=z.x1&&p.y+p.h<=z.y1&&!hitsSolid(p,p.id))p.unplaced=false;}
+ }
+ dragging=null;
+ if(changed)afterChange();
+ else if(drawMode==='wires')wirePick(id);
+ else drawCabinet();
+}
 $('cabinetSvg').addEventListener('pointerup',dragEnd);$('cabinetSvg').addEventListener('pointercancel',dragEnd);
 window.addEventListener('keydown',e=>{const typing=e.target.closest('input,textarea,select');if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'&&!typing){e.preventDefault();undo();return}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'&&!typing){e.preventDefault();redo();return}if(typing)return;
  if(e.key==='Delete'&&selected){e.preventDefault();removeSelected();return}const keys={'ArrowLeft':[-1,0],'ArrowRight':[1,0],'ArrowUp':[0,-1],'ArrowDown':[0,1]};if(keys[e.key]&&selected){e.preventDefault();const p=state.parts.find(v=>v.id===selected),d=e.shiftKey?1:10;if(p){p.x=clamp(p.x+keys[e.key][0]*d,0,W-p.w);p.y=clamp(p.y+keys[e.key][1]*d,0,H-p.h);afterChange()}}});
